@@ -8,16 +8,28 @@ package com.mkabore.yt.ui.dashboard
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
+import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mkabore.yt.R
 import com.mkabore.yt.data.db.entity.Video
 import com.mkabore.yt.util.PlaylistItemClickListener
 import kotlinx.android.synthetic.main.video_list_item_layout.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class VideoListAdapter(
     private val videoList: ArrayList<Video>, private val clickListener: PlaylistItemClickListener
-) : RecyclerView.Adapter<VideoListAdapter.DataViewHolder>() {
+) : RecyclerView.Adapter<VideoListAdapter.DataViewHolder>(), Filterable {
+
+    var videoFilterList = ArrayList<Video>()
+
+    init {
+        videoFilterList = videoList
+    }
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(video: Video) {
@@ -48,4 +60,41 @@ class VideoListAdapter(
         videoList.addAll(list)
     }
 
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if(charSearch.isEmpty()) {
+                    videoFilterList = videoList
+                } else {
+                    val resultList = ArrayList<Video>()
+                    for (row in videoList) {
+                        if (row.title.toString().toLowerCase(Locale.ROOT).contains(charSearch.toLowerCase(Locale.ROOT))) {
+                            resultList.add(row)
+                        }
+                    }
+                    videoFilterList = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = videoFilterList
+                return filterResults
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                var videoFilterList = results?.values as ArrayList<Video>
+                renderFilteredList(videoFilterList)
+            }
+        }
+    }
+
+    private fun renderFilteredList(videoFilterList: List<Video>) {
+        if(videoFilterList.isNotEmpty())
+        {
+            videoList.clear()
+            addData(videoFilterList)
+            notifyDataSetChanged()
+        }
+    }
 }

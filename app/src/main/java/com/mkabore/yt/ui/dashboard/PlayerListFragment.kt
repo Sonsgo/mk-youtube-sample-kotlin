@@ -5,6 +5,7 @@ package com.mkabore.yt.ui.dashboard
  * 2020-10-25
  */
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -31,7 +33,6 @@ import com.mkabore.yt.util.PlaylistItemClickListener
 import com.mkabore.yt.util.ResultStatus
 import com.mkabore.yt.util.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_dashboard.*
-import kotlinx.android.synthetic.main.playlist_item_layout.view.*
 
 class PlayerListFragment : Fragment(), PlaylistItemClickListener
 {
@@ -58,12 +59,16 @@ class PlayerListFragment : Fragment(), PlaylistItemClickListener
 
         val rootView = binding.root;
 
+
+
         recyclerView = rootView.findViewById(R.id.recyclerView)
 
         setupHeader(rootView)
         setupUI(rootView.context)
         setupViewModel(rootView.context)
         setupObserver(rootView.context)
+
+        setupSearchView(rootView)
 
         return rootView
     }
@@ -88,6 +93,34 @@ class PlayerListFragment : Fragment(), PlaylistItemClickListener
         Glide.with(rootView.context)
             .load(thumbnail)
             .into(imageViewDetail)
+    }
+
+
+    private fun setupSearchView(rootView: View)
+    {
+        val videoSearch: SearchView = rootView.findViewById(R.id.video_search)
+        videoSearch.setOnClickListener(View.OnClickListener { videoSearch.isIconified = false })
+
+        val searchIcon = videoSearch.findViewById<ImageView>(R.id.search_mag_icon)
+        searchIcon.setColorFilter(Color.WHITE)
+
+
+        val cancelIcon = videoSearch.findViewById<ImageView>(R.id.search_close_btn)
+        cancelIcon.setColorFilter(Color.WHITE)
+        videoSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return false
+            }
+
+        })
+
+        val textView = videoSearch.findViewById<TextView>(R.id.search_src_text)
+        textView.setTextColor(Color.WHITE)
     }
 
     private fun setupUI(context: Context) {
@@ -139,13 +172,15 @@ class PlayerListFragment : Fragment(), PlaylistItemClickListener
             ViewModelFactory(
                 context,
                 YtApiService,
-                DatabaseHelperImpl(DatabaseBuilder.getInstance(context)),author?:"",playlistId?:""
+                DatabaseHelperImpl(DatabaseBuilder.getInstance(context)),
+                author ?: "",
+                playlistId ?: ""
             )
         ).get(VideoListViewModel::class.java)
     }
 
 
-    override fun onClickListener(playlistItem : PlaylistItem)
+    override fun onClickListener(playlistItem: PlaylistItem)
     {
 
     }
