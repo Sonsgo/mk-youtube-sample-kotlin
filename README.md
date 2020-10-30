@@ -12,7 +12,7 @@ Sample Youtube Application in Kotlin which show how to use Youtube Data API
 
 
 # Improvement
-- Support searching
+- Improve searching
 - Display the last 5 video played
 - Support for "Play All"
 - UX improvement with buttons and selected items background color state changes
