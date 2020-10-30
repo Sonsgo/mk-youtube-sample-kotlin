@@ -6,7 +6,7 @@ package com.mkabore.yt.util
  */
 object AppConstants
 {
-    val YOUTUBE_API_KEY = "YOUR-YOUTUBE-KEY"
+    const val YOUTUBE_API_KEY = "YOUR-YOUTUBE-KEY"
 
-    val CLIENT_ID = "YOUR-CLIENT_ID"
+    const val CLIENT_ID = "YOUR-CLIENT_ID"
 }

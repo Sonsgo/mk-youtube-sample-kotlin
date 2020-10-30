@@ -27,9 +27,11 @@ class VideoListAdapter(
 
     var videoFilterList = ArrayList<Video>()
 
-    init {
+    fun setNonFilteredVideoList(videoList : ArrayList<Video>)
+    {
         videoFilterList = videoList
     }
+
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(video: Video) {
@@ -65,19 +67,20 @@ class VideoListAdapter(
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val charSearch = constraint.toString()
+                var listToReturn =  ArrayList<Video>()
                 if(charSearch.isEmpty()) {
-                    videoFilterList = videoList
+                    listToReturn = videoFilterList
                 } else {
                     val resultList = ArrayList<Video>()
-                    for (row in videoList) {
+                    for (row in videoFilterList) {
                         if (row.title.toString().toLowerCase(Locale.ROOT).contains(charSearch.toLowerCase(Locale.ROOT))) {
                             resultList.add(row)
                         }
                     }
-                    videoFilterList = resultList
+                    listToReturn.addAll(resultList)
                 }
                 val filterResults = FilterResults()
-                filterResults.values = videoFilterList
+                filterResults.values = listToReturn
                 return filterResults
             }
 

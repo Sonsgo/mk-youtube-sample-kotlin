@@ -161,6 +161,7 @@ class PlayerListFragment : Fragment(), PlaylistItemClickListener
 
     private fun renderList(videoList: List<Video>) {
         adapter.addData(videoList)
+        adapter.setNonFilteredVideoList(videoList as ArrayList<Video>)
         adapter.notifyDataSetChanged()
     }
 
